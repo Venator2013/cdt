@@ -151,6 +151,14 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				List<String> command = new ArrayList<>();
 
 				command.add("cmake"); //$NON-NLS-1$
+				// TODO location of CMake out of preferences if not found here
+				Path cmakePath = findCommand("cmake"); //$NON-NLS-1$
+				if (cmakePath != null) {
+					command.add(cmakePath.toString());
+				} else {
+					command.add("cmake"); //$NON-NLS-1$
+				}
+
 				command.add("-G"); //$NON-NLS-1$
 				command.add(generator);
 
