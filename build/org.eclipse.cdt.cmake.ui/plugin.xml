@@ -70,9 +70,45 @@
          point="org.eclipse.cdt.launch.coreBuildTab">
       <provider
             nature="org.eclipse.cdt.cmake.core.cmakeNature"
-            priority="10"
             tabClass="org.eclipse.cdt.cmake.ui.internal.CMakeBuildTab">
       </provider>
+   </extension>
+    <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.eclipse.cdt.launch.internal.LocalRunLaunchDelegate"
+            id="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType"
+            modes="run"
+            name="%localApplicationLaunch.name"
+            public="false">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="org.eclipse.debug.ui.CommonTab"
+            group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
+            id="org.eclipse.cdt.cmake.ui.tab.com"
+            name="Common">
+      </tab>
+      <tab
+            class="org.eclipse.cdt.dsf.gdb.internal.ui.launching.LocalApplicationCDebuggerTab"
+            group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
+            id="org.eclipse.cdt.cmake.ui.tab.deb"
+            name="Debugger">
+      </tab>
+      <tab
+            class="org.eclipse.cdt.launch.ui.CArgumentsTab"
+            group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
+            id="org.eclipse.cdt.cmake.ui.tab.carg"
+            name="Arguments">
+      </tab>
+      <tab
+            class="org.eclipse.cdt.launch.ui.CMainTab"
+            group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
+            id="org.eclipse.cdt.cmake.ui.tab.main"
+            name="Main">
+      </tab>
    </extension>
 
 </plugin>
