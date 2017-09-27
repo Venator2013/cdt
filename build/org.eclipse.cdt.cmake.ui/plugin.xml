@@ -73,23 +73,13 @@
             tabClass="org.eclipse.cdt.cmake.ui.internal.CMakeBuildTab">
       </provider>
    </extension>
-    <extension
-         point="org.eclipse.debug.core.launchConfigurationTypes">
-      <launchConfigurationType
-            delegate="org.eclipse.cdt.launch.internal.LocalRunLaunchDelegate"
-            id="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType"
-            modes="run"
-            name="%localApplicationLaunch.name"
-            public="false">
-      </launchConfigurationType>
-   </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabs">
       <tab
-            class="org.eclipse.debug.ui.CommonTab"
+            class="org.eclipse.cdt.launch.ui.CArgumentsTab"
             group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
-            id="org.eclipse.cdt.cmake.ui.tab.com"
-            name="Common">
+            id="org.eclipse.cdt.cmake.ui.tab.carg"
+            name="Arguments">
       </tab>
       <tab
             class="org.eclipse.cdt.dsf.gdb.internal.ui.launching.LocalApplicationCDebuggerTab"
@@ -98,17 +88,33 @@
             name="Debugger">
       </tab>
       <tab
-            class="org.eclipse.cdt.launch.ui.CArgumentsTab"
+            class="org.eclipse.debug.ui.CommonTab"
             group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
-            id="org.eclipse.cdt.cmake.ui.tab.carg"
-            name="Arguments">
-      </tab>
-      <tab
-            class="org.eclipse.cdt.launch.ui.CMainTab"
-            group="org.eclipse.cdt.launch.launchConfigurationTabGroup.local"
-            id="org.eclipse.cdt.cmake.ui.tab.main"
-            name="Main">
+            id="org.eclipse.cdt.cmake.ui.tab.com"
+            name="Common">
       </tab>
    </extension>
-
+ 
+	<extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
+            id="org.eclipse.cdt.cmake.core.CoreBuildLocalRun"
+            modes="run"
+            name="CMake Run"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+       
+      </launchDelegate>
+      <launchDelegate
+            delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalDebugLaunchDelegate"
+            id="org.eclipse.cdt.cmake.core.CoreBuildLocalDebug"
+            modes="debug"
+            name="CMake Debug"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+      </launchDelegate>
+   </extension>
 </plugin>
