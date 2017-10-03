@@ -94,18 +94,31 @@
             name="Common">
       </tab>
    </extension>
- 
+	 <extension point="org.eclipse.debug.core.launchModes">
+	  <launchMode
+	   mode="package"
+	   label="Package">
+	  </launchMode>
+	 </extension>
 	<extension
          point="org.eclipse.debug.core.launchDelegates">
+         <launchDelegate
+            delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
+            id="org.eclipse.cdt.cmake.core.CoreBuildLocalPackage"
+            modes="package"
+            name="CMake Package"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+      </launchDelegate>
       <launchDelegate
             delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
             id="org.eclipse.cdt.cmake.core.CoreBuildLocalRun"
-            modes="run"
+            modes="run,package"
             name="CMake Run"
             sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
             sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
             type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
-       
       </launchDelegate>
       <launchDelegate
             delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalDebugLaunchDelegate"
@@ -117,4 +130,14 @@
             type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
       </launchDelegate>
    </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchGroups">
+    <launchGroup
+          bannerImage="icons/cmake_logo-16.png"
+          id="org.eclipse.cdt.cmake.ui.PackagelaunchGroup"
+          image="icons/cmake_logo-16.png"
+          label="Package"
+          mode="package">
+    </launchGroup>
+ </extension>
 </plugin>

@@ -174,6 +174,9 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				case "run": //$NON-NLS-1$
 					command.add("-DCMAKE_BUILD_TYPE=Release"); //$NON-NLS-1$
 					break;
+				case "package": //$NON-NLS-1$
+					command.add("-DCMAKE_BUILD_TYPE=Release"); //$NON-NLS-1$
+					break;
 				}
 				command.add("-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"); //$NON-NLS-1$
 				
