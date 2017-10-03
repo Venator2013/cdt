@@ -19,4 +19,40 @@
             natureId="org.eclipse.cdt.cmake.core.cmakeNature">
       </provider>
    </extension>
+	<extension point="org.eclipse.debug.core.launchModes">
+	  <launchMode
+	   mode="package"
+	   label="Package">
+	  </launchMode>
+	 </extension>
+	 <extension
+	     point="org.eclipse.debug.core.launchDelegates">
+	     <launchDelegate
+	        delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalNullLaunchDelegate"
+	        id="org.eclipse.cdt.cmake.core.CoreBuildLocalPackage"
+	        modes="package"
+	        name="CMake Package"
+	        sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+	        sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+	        type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+	  </launchDelegate>
+	  <launchDelegate
+	        delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
+	        id="org.eclipse.cdt.cmake.core.CoreBuildLocalRun"
+	        modes="run"
+	        name="CMake Run"
+	        sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+	        sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+	        type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+	  </launchDelegate>
+	  <launchDelegate
+	        delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalDebugLaunchDelegate"
+	        id="org.eclipse.cdt.cmake.core.CoreBuildLocalDebug"
+	        modes="debug"
+	        name="CMake Debug"
+	        sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+	        sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+	        type="org.eclipse.cdt.debug.core.localCoreBuildLaunchConfigType">
+	  </launchDelegate>
+	   </extension>
 </plugin>
