@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	public static String CMakeBuildTab_Cmake;
 	public static String CMakeBuildTab_CMakeArgs;
 	public static String CMakeBuildTab_Generator;
+	public static String CMakeBuildTab_MinGW;
 	public static String CMakeBuildTab_Ninja;
 	public static String CMakeBuildTab_NoneAvailable;
 	public static String CMakeBuildTab_Settings;
