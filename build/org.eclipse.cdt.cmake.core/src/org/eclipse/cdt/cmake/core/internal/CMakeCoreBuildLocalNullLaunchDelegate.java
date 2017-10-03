@@ -12,7 +12,6 @@ public class CMakeCoreBuildLocalNullLaunchDelegate extends CoreBuildLaunchConfig
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
 		// Do Nothing
-		
 	}
 
 }
