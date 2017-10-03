@@ -103,7 +103,7 @@
 	<extension
          point="org.eclipse.debug.core.launchDelegates">
          <launchDelegate
-            delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
+            delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalNullLaunchDelegate"
             id="org.eclipse.cdt.cmake.core.CoreBuildLocalPackage"
             modes="package"
             name="CMake Package"
@@ -114,7 +114,7 @@
       <launchDelegate
             delegate="org.eclipse.cdt.cmake.core.internal.CMakeCoreBuildLocalRunLaunchDelegate"
             id="org.eclipse.cdt.cmake.core.CoreBuildLocalRun"
-            modes="run,package"
+            modes="run"
             name="CMake Run"
             sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
             sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
