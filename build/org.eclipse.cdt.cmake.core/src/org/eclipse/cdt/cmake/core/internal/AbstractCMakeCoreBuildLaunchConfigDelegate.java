@@ -8,7 +8,6 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.debug.core.CDebugUtils;
 import org.eclipse.cdt.debug.core.ICDTLaunchConfigurationConstants;
 import org.eclipse.cdt.debug.core.launch.CoreBuildLaunchConfigDelegate;
-import org.eclipse.cdt.launch.internal.ui.LaunchMessages;
 import org.eclipse.cdt.utils.pty.PTY;
 import org.eclipse.cdt.utils.spawner.ProcessFactory;
 import org.eclipse.core.resources.IContainer;
@@ -88,9 +87,8 @@ public abstract class AbstractCMakeCoreBuildLaunchConfigDelegate extends CoreBui
 			}
 		}
 	
-		abort(LaunchMessages.AbstractCLaunchDelegate_Working_directory_does_not_exist,
-				new FileNotFoundException(
-						NLS.bind(LaunchMessages.AbstractCLaunchDelegate_WORKINGDIRECTORY_PATH_not_found,
+		abort("Working directory does not exist",	new FileNotFoundException(
+						NLS.bind("The working directory {0} does not exist.",
 								 path.toOSString())),
 								 ICDTLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST);
 		return null;
@@ -142,7 +140,7 @@ public abstract class AbstractCMakeCoreBuildLaunchConfigDelegate extends CoreBui
 				return ProcessFactory.getFactory().exec(cmdLine, environ, workingDirectory);
 			}
 		} catch (IOException e) {
-			abort(LaunchMessages.LocalCDILaunchDelegate_8, e, ICDTLaunchConfigurationConstants.ERR_INTERNAL_ERROR);
+			abort("Error starting process.", e, ICDTLaunchConfigurationConstants.ERR_INTERNAL_ERROR);
 		}
 		return null;
 	}
