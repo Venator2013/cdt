@@ -81,7 +81,7 @@ public class CMakeCoreBuildLocalDebugLaunchDelegate extends AbstractCMakeCoreBui
 		try {
 			servicesLaunchSequence.get();
 		} catch (InterruptedException | ExecutionException e) {
-			throw new DebugException(new Status(IStatus.ERROR, "", "", e));
+			throw new DebugException(new Status(IStatus.ERROR, Activator.getId(), "Can not run gdb", e));
 		}
 
 		gdbLaunch.initializeControl();
@@ -115,7 +115,7 @@ public class CMakeCoreBuildLocalDebugLaunchDelegate extends AbstractCMakeCoreBui
 		try {
 			ready.get();
 		} catch (ExecutionException | InterruptedException e) {
-			throw new DebugException(new Status(IStatus.ERROR, "", "", e));
+			throw new DebugException(new Status(IStatus.ERROR, Activator.getId(), "Can not run gdb", e));
 		}
 	}
 
