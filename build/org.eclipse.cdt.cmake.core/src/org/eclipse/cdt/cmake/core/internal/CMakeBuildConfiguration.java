@@ -148,8 +148,8 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				}
 
 				command.add("-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"); //$NON-NLS-1$
-				
-				String userArgs = getProperty(CMAKE_ARGUMENTS);
+
+				String userArgs = properties.get(CMAKE_ARGUMENTS);
 				if (userArgs != null) {
 					command.addAll(Arrays.asList(userArgs.trim().split("\\s+"))); //$NON-NLS-1$
 				}
@@ -192,8 +192,21 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 			return new IProject[] { project };
 		} catch (IOException e) {
-			throw new CoreException(Activator.errorStatus(String.format(Messages.CMakeBuildConfiguration_Building, project.getName()), e));
+			throw new CoreException(Activator
+					.errorStatus(String.format(Messages.CMakeBuildConfiguration_Building, project.getName()), e));
 		}
+	}
+
+	private String getBuildCommand(String generator) {
+		String command;
+		if (generator.equals("Ninja")) { //$NON-NLS-1$
+			command = "ninja"; //$NON-NLS-1$
+		} else if (generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
+			command = "mingw32-make"; //$NON-NLS-1$
+		} else {
+			command = "make"; //$NON-NLS-1$
+		}
+		return command;
 	}
 
 	@Override
@@ -215,11 +228,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 			String cleanCommand = getProperty(CLEAN_COMMAND);
 			if (cleanCommand == null) {
-				if (generator == null || generator.equals("Ninja")) { //$NON-NLS-1$
-					cleanCommand = "ninja clean"; //$NON-NLS-1$
-				} else {
-					cleanCommand = "make clean"; //$NON-NLS-1$
-				}
+				cleanCommand = getBuildCommand(generator).concat(" clean");
 			}
 			String[] command = cleanCommand.split(" "); //$NON-NLS-1$
 
@@ -235,7 +244,8 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException e) {
-			throw new CoreException(Activator.errorStatus(String.format(Messages.CMakeBuildConfiguration_Cleaning, project.getName()), e));
+			throw new CoreException(Activator
+					.errorStatus(String.format(Messages.CMakeBuildConfiguration_Cleaning, project.getName()), e));
 		}
 	}
 
@@ -256,8 +266,8 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				}
 				shutdown();
 			} catch (IOException e) {
-				throw new CoreException(
-						Activator.errorStatus(String.format(Messages.CMakeBuildConfiguration_ProcCompCmds, project.getName()), e));
+				throw new CoreException(Activator.errorStatus(
+						String.format(Messages.CMakeBuildConfiguration_ProcCompCmds, project.getName()), e));
 			}
 		}
 	}
