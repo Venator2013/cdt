@@ -134,7 +134,7 @@
        point="org.eclipse.debug.ui.launchGroups">
     <launchGroup
           bannerImage="icons/cmake_logo-16.png"
-          id="org.eclipse.cdt.cmake.ui.PackagelaunchGroup"
+          id="org.eclipse.cdt.cmake.ui.packageLaunchGroup"
           image="icons/cmake_logo-16.png"
           label="Package"
           mode="package">

@@ -2,14 +2,11 @@ package org.eclipse.cdt.cmake.core.internal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.debug.core.CDebugUtils;
 import org.eclipse.cdt.debug.core.ICDTLaunchConfigurationConstants;
 import org.eclipse.cdt.debug.core.launch.CoreBuildLaunchConfigDelegate;
-import org.eclipse.cdt.utils.pty.PTY;
-import org.eclipse.cdt.utils.spawner.ProcessFactory;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -118,30 +115,4 @@ public abstract class AbstractCMakeCoreBuildLaunchConfigDelegate extends CoreBui
 		throw new CoreException(status);
 	}
 
-	/**
-	 * Performs a runtime exec on the given command line in the context of the
-	 * specified working directory, and returns the resulting process.
-	 * 
-	 * @param cmdLine
-	 *            the command line
-	 * @param environ
-	 * @param workingDirectory
-	 *            the working directory, or <code>null</code>
-	 * @return the resulting process or <code>null</code> if the exec is
-	 *         cancelled
-	 * @see Runtime
-	 * @since 4.7
-	 */
-	protected Process exec(String[] cmdLine, String[] environ, File workingDirectory) throws CoreException {
-		try {
-			if (PTY.isSupported()) {
-				return ProcessFactory.getFactory().exec(cmdLine, environ, workingDirectory, new PTY());
-			} else {
-				return ProcessFactory.getFactory().exec(cmdLine, environ, workingDirectory);
-			}
-		} catch (IOException e) {
-			abort("Error starting process.", e, ICDTLaunchConfigurationConstants.ERR_INTERNAL_ERROR);
-		}
-		return null;
-	}
 }
