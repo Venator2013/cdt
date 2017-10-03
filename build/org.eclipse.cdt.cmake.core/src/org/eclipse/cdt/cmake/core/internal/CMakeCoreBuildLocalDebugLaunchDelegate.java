@@ -14,8 +14,6 @@ import org.eclipse.cdt.dsf.concurrent.ImmediateExecutor;
 import org.eclipse.cdt.dsf.concurrent.Query;
 import org.eclipse.cdt.dsf.concurrent.RequestMonitorWithProgress;
 import org.eclipse.cdt.dsf.concurrent.Sequence;
-import org.eclipse.cdt.dsf.gdb.internal.GdbPlugin;
-import org.eclipse.cdt.dsf.gdb.internal.Messages;
 import org.eclipse.cdt.dsf.gdb.launching.GdbLaunch;
 import org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupDirector;
 import org.eclipse.cdt.dsf.gdb.launching.ServicesLaunchSequence;
@@ -83,7 +81,7 @@ public class CMakeCoreBuildLocalDebugLaunchDelegate extends AbstractCMakeCoreBui
 		try {
 			servicesLaunchSequence.get();
 		} catch (InterruptedException | ExecutionException e) {
-			throw new DebugException(new Status(IStatus.ERROR, GdbPlugin.PLUGIN_ID, Messages.CoreBuildLocalDebugLaunchDelegate_FailureLaunching, e));
+			throw new DebugException(new Status(IStatus.ERROR, "", "", e));
 		}
 
 		gdbLaunch.initializeControl();
@@ -94,7 +92,7 @@ public class CMakeCoreBuildLocalDebugLaunchDelegate extends AbstractCMakeCoreBui
 			@Override
 			protected void execute(final DataRequestMonitor<Object> rm) {
 				DsfServicesTracker tracker = new DsfServicesTracker(
-						GdbPlugin.getDefault().getBundle().getBundleContext(), gdbLaunch.getSession().getId());
+						Activator.getPlugin().getBundle().getBundleContext(), gdbLaunch.getSession().getId());
 				IGDBControl control = tracker.getService(IGDBControl.class);
 				tracker.dispose();
 				control.completeInitialization(
@@ -117,7 +115,7 @@ public class CMakeCoreBuildLocalDebugLaunchDelegate extends AbstractCMakeCoreBui
 		try {
 			ready.get();
 		} catch (ExecutionException | InterruptedException e) {
-			throw new DebugException(new Status(IStatus.ERROR, GdbPlugin.PLUGIN_ID, Messages.CoreBuildLocalDebugLaunchDelegate_FailureStart, e));
+			throw new DebugException(new Status(IStatus.ERROR, "", "", e));
 		}
 	}
 
