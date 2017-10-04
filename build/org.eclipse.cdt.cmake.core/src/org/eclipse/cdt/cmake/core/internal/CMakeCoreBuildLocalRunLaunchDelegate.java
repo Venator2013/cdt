@@ -3,6 +3,9 @@ package org.eclipse.cdt.cmake.core.internal;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.core.model.IBinary;
@@ -29,10 +32,12 @@ public class CMakeCoreBuildLocalRunLaunchDelegate extends AbstractCMakeCoreBuild
 		ICBuildConfiguration buildConfig = getBuildConfiguration(project, mode, target, monitor);
 		IBinary exeFile = getBinary(buildConfig);
 
-		String args = LaunchUtils.getProgramArguments(configuration);
-		if(args == null) {
-			args = new String();
-		}
+		String[] args = LaunchUtils.getProgramArgumentsArray(configuration);
+		List<String> processCommand = new ArrayList<String>();
+		
+		processCommand.add(Paths.get(exeFile.getLocationURI()).toString());
+		processCommand.addAll(Arrays.asList(args));
+		
 		
 		File workDirectory = verifyWorkingDirectory(configuration);
 		if (workDirectory == null) {
@@ -40,7 +45,7 @@ public class CMakeCoreBuildLocalRunLaunchDelegate extends AbstractCMakeCoreBuild
 		}
 				
 		try {
-			ProcessBuilder builder = new ProcessBuilder(Paths.get(exeFile.getLocationURI()).toString(),args).directory(workDirectory);
+			ProcessBuilder builder = new ProcessBuilder(processCommand).directory(workDirectory);
 			buildConfig.setBuildEnvironment(builder.environment());
 			Process process = builder.start();
 			DebugPlugin.newProcess(launch, process, exeFile.getPath().lastSegment());
