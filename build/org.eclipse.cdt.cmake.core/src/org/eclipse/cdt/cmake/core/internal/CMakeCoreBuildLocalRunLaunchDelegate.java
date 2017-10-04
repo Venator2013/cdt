@@ -30,12 +30,15 @@ public class CMakeCoreBuildLocalRunLaunchDelegate extends AbstractCMakeCoreBuild
 		IBinary exeFile = getBinary(buildConfig);
 
 		String args = LaunchUtils.getProgramArguments(configuration);
+		if(args == null) {
+			args = new String();
+		}
 		
 		File workDirectory = verifyWorkingDirectory(configuration);
 		if (workDirectory == null) {
 			workDirectory = new File(System.getProperty("user.home", ".")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		
+				
 		try {
 			ProcessBuilder builder = new ProcessBuilder(Paths.get(exeFile.getLocationURI()).toString(),args).directory(workDirectory);
 			buildConfig.setBuildEnvironment(builder.environment());
