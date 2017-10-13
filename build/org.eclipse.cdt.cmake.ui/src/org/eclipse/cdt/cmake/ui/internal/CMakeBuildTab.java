@@ -78,7 +78,7 @@ public class CMakeBuildTab extends CommonBuildTab {
 				updateLaunchConfigurationDialog();
 			}
 		});
-		
+
 		minGWGenButton = new Button(genComp, SWT.RADIO);
 		minGWGenButton.setText(Messages.CMakeBuildTab_MinGW);
 		minGWGenButton.addSelectionListener(new SelectionAdapter() {
@@ -149,10 +149,16 @@ public class CMakeBuildTab extends CommonBuildTab {
 	private void updateGeneratorButtons(String generator) {
 		if (generator == null || generator.equals("Ninja")) { //$NON-NLS-1$
 			ninjaGenButton.setSelection(true);
-		}else if(generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
+			unixGenButton.setSelection(false);
+			minGWGenButton.setSelection(false);
+		} else if (generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
+			ninjaGenButton.setSelection(false);
+			unixGenButton.setSelection(false);
 			minGWGenButton.setSelection(true);
 		} else {
+			ninjaGenButton.setSelection(false);
 			unixGenButton.setSelection(true);
+			minGWGenButton.setSelection(false);
 		}
 	}
 
@@ -162,20 +168,15 @@ public class CMakeBuildTab extends CommonBuildTab {
 
 		ICBuildConfiguration buildConfig = getBuildConfiguration();
 
-		buildConfig.setProperty(CMakeBuildConfiguration.CMAKE_GENERATOR,
-				ninjaGenButton.getSelection() ? "Ninja" : "Unix Makefiles"); //$NON-NLS-1$ //$NON-NLS-2$
-
-		String generator = "Unix Makefiles";
-		if(ninjaGenButton.getSelection())
-		{
-			generator = "Ninja" ;
-		}else if (minGWGenButton.getSelection()) {
-			generator = "MinGW Makefiles";
+		String generator = "Unix Makefiles"; //$NON-NLS-1$
+		if (ninjaGenButton.getSelection()) {
+			generator = "Ninja"; //$NON-NLS-1$
+		} else if (minGWGenButton.getSelection()) {
+			generator = "MinGW Makefiles"; //$NON-NLS-1$
 		}
-		
-		
-		properties.put(CMakeBuildConfiguration.CMAKE_GENERATOR,	generator);
-		
+
+		buildConfig.setProperty(CMakeBuildConfiguration.CMAKE_GENERATOR, generator);
+
 		String cmakeArgs = cmakeArgsText.getText().trim();
 		if (!cmakeArgs.isEmpty()) {
 			buildConfig.setProperty(CMakeBuildConfiguration.CMAKE_ARGUMENTS, cmakeArgs);
@@ -198,9 +199,32 @@ public class CMakeBuildTab extends CommonBuildTab {
 		}
 	}
 
-		String buildAttribute = CoreBuildLaunchConfigDelegate	.getBuildAttributeName(getLaunchConfigurationDialog().getMode());
-		if (!properties.isEmpty()) {
-			configuration.setAttribute(buildAttribute, properties);
+	@Override
+	protected void saveProperties(Map<String, String> properties) {
+		super.saveProperties(properties);
+		String generator = "Unix Makefiles"; //$NON-NLS-1$
+		if (ninjaGenButton.getSelection()) {
+			generator = "Ninja"; //$NON-NLS-1$
+		} else if (minGWGenButton.getSelection()) {
+			generator = "MinGW Makefiles"; //$NON-NLS-1$
+		}
+		properties.put(CMakeBuildConfiguration.CMAKE_GENERATOR,generator);
+
+		properties.put(CMakeBuildConfiguration.CMAKE_ARGUMENTS, cmakeArgsText.getText().trim());
+		properties.put(CMakeBuildConfiguration.BUILD_COMMAND, buildCommandText.getText().trim());
+		properties.put(CMakeBuildConfiguration.CLEAN_COMMAND, cleanCommandText.getText().trim());
+	}
+
+	@Override
+	protected void restoreProperties(Map<String, String> properties) {
+		super.restoreProperties(properties);
+
+		String gen = properties.get(CMakeBuildConfiguration.CMAKE_GENERATOR);
+		updateGeneratorButtons(gen);
+
+		String cmakeArgs = properties.get(CMakeBuildConfiguration.CMAKE_ARGUMENTS);
+		if (cmakeArgs != null) {
+			cmakeArgsText.setText(cmakeArgs);
 		} else {
 			cmakeArgsText.setText(""); //$NON-NLS-1$
 		}

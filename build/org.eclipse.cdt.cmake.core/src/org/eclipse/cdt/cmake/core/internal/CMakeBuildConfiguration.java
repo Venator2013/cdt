@@ -149,7 +149,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 				command.add("-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"); //$NON-NLS-1$
 
-				String userArgs = properties.get(CMAKE_ARGUMENTS);
+				String userArgs = getProperty(CMAKE_ARGUMENTS);
 				if (userArgs != null) {
 					command.addAll(Arrays.asList(userArgs.trim().split("\\s+"))); //$NON-NLS-1$
 				}
