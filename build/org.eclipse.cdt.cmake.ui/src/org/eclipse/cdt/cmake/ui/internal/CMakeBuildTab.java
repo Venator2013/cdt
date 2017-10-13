@@ -161,6 +161,17 @@ public class CMakeBuildTab extends CommonBuildTab {
 			minGWGenButton.setSelection(false);
 		}
 	}
+	
+	private String getGeneratorString()
+	{
+		String generator = "Unix Makefiles"; //$NON-NLS-1$
+		if (ninjaGenButton.getSelection()) {
+			generator = "Ninja"; //$NON-NLS-1$
+		} else if (minGWGenButton.getSelection()) {
+			generator = "MinGW Makefiles"; //$NON-NLS-1$
+		}
+		return generator;
+	}
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
@@ -168,14 +179,7 @@ public class CMakeBuildTab extends CommonBuildTab {
 
 		ICBuildConfiguration buildConfig = getBuildConfiguration();
 
-		String generator = "Unix Makefiles"; //$NON-NLS-1$
-		if (ninjaGenButton.getSelection()) {
-			generator = "Ninja"; //$NON-NLS-1$
-		} else if (minGWGenButton.getSelection()) {
-			generator = "MinGW Makefiles"; //$NON-NLS-1$
-		}
-
-		buildConfig.setProperty(CMakeBuildConfiguration.CMAKE_GENERATOR, generator);
+		buildConfig.setProperty(CMakeBuildConfiguration.CMAKE_GENERATOR, getGeneratorString());
 
 		String cmakeArgs = cmakeArgsText.getText().trim();
 		if (!cmakeArgs.isEmpty()) {
@@ -202,14 +206,7 @@ public class CMakeBuildTab extends CommonBuildTab {
 	@Override
 	protected void saveProperties(Map<String, String> properties) {
 		super.saveProperties(properties);
-		String generator = "Unix Makefiles"; //$NON-NLS-1$
-		if (ninjaGenButton.getSelection()) {
-			generator = "Ninja"; //$NON-NLS-1$
-		} else if (minGWGenButton.getSelection()) {
-			generator = "MinGW Makefiles"; //$NON-NLS-1$
-		}
-		properties.put(CMakeBuildConfiguration.CMAKE_GENERATOR,generator);
-
+		properties.put(CMakeBuildConfiguration.CMAKE_GENERATOR,getGeneratorString());
 		properties.put(CMakeBuildConfiguration.CMAKE_ARGUMENTS, cmakeArgsText.getText().trim());
 		properties.put(CMakeBuildConfiguration.BUILD_COMMAND, buildCommandText.getText().trim());
 		properties.put(CMakeBuildConfiguration.CLEAN_COMMAND, cleanCommandText.getText().trim());
