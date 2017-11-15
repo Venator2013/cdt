@@ -94,7 +94,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 	public IProject[] build(int kind, Map<String, String> args, IConsole console, IProgressMonitor monitor)
 			throws CoreException {
 		IProject project = getProject();
-		
+
 		try {
 			String generator = getProperty(CMAKE_GENERATOR);
 			if (generator == null) {
@@ -166,10 +166,18 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
 					getToolChain().getErrorParserIds())) {
 				epm.setOutputStream(console.getOutputStream());
-				
+
 				String buildCommand = getProperty(BUILD_COMMAND);
 				String[] command = buildCommand != null && !buildCommand.trim().isEmpty() ? buildCommand.split(" ") //$NON-NLS-1$
 						: new String[] { "cmake", "--build", "." }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+				if (getLaunchMode().equals("package")) {
+					List<String> strL = new ArrayList<String>(Arrays.asList(command));
+					strL.add("--target");
+					strL.add("package");
+					command = new String[strL.size()];
+					strL.toArray(command);
+				}
 
 				Path cmdPath = findCommand(command[0]);
 				if (cmdPath != null) {
@@ -197,51 +205,37 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 		}
 	}
 
-	private String getBuildCommand(String generator) {
-		String command;
-		if (generator.equals("Ninja")) { //$NON-NLS-1$
-			command = "ninja"; //$NON-NLS-1$
-		} else if (generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
-			command = "mingw32-make"; //$NON-NLS-1$
-		} else {
-			command = "make"; //$NON-NLS-1$
-		}
-		return command;
-	}
-
 	@Override
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 		try {
-			String generator = getProperty(CMAKE_GENERATOR);
-
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
-
+			
 			ConsoleOutputStream outStream = console.getOutputStream();
-
 			Path buildDir = getBuildDirectory();
-
 			if (!Files.exists(buildDir.resolve("CMakeFiles"))) { //$NON-NLS-1$
 				outStream.write(Messages.CMakeBuildConfiguration_NotFound);
 				return;
 			}
+			
+			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
+					getToolChain().getErrorParserIds())) {
+				epm.setOutputStream(console.getOutputStream());
+				String cleanCommand = getProperty(CLEAN_COMMAND);
+				String[] command = cleanCommand != null && !cleanCommand.trim().isEmpty() ? cleanCommand.split(" ") //$NON-NLS-1$
+						: new String[] { "cmake", "--build", ".", "--target", "clean" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-			String cleanCommand = getProperty(CLEAN_COMMAND);
-			if (cleanCommand == null) {
-				cleanCommand = getBuildCommand(generator).concat(" clean");
+				Path cmdPath = findCommand(command[0]);
+				if (cmdPath != null) {
+					command[0] = cmdPath.toString();
+				}
+
+				ProcessBuilder processBuilder = new ProcessBuilder(command).directory(buildDir.toFile());
+				setBuildEnvironment(processBuilder.environment());
+				Process process = processBuilder.start();
+				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+				watchProcess(process, new IConsoleParser[] { epm });
 			}
-			String[] command = cleanCommand.split(" "); //$NON-NLS-1$
-
-			Path cmdPath = findCommand(command[0]);
-			if (cmdPath != null) {
-				command[0] = cmdPath.toString();
-			}
-
-			ProcessBuilder processBuilder = new ProcessBuilder(command).directory(buildDir.toFile());
-			Process process = processBuilder.start();
-			outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
-			watchProcess(process, console);
-
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException e) {
 			throw new CoreException(Activator
