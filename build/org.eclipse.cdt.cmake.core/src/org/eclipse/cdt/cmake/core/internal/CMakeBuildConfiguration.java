@@ -110,7 +110,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 	public IProject[] build(int kind, Map<String, String> args, IConsole console, IProgressMonitor monitor)
 			throws CoreException {
 		IProject project = getProject();
-		
+
 		try {
 			String generator = getProperty(CMAKE_GENERATOR);
 			if (generator == null) {
@@ -200,7 +200,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
 					getToolChain().getErrorParserIds())) {
 				epm.setOutputStream(console.getOutputStream());
-				
+
 				List<String> command = new ArrayList<>();
 				
 				String envStr = getProperty(CMAKE_ENV);
@@ -257,48 +257,32 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 		}
 	}
 
-	private String getBuildCommand(String generator) {
-		String command;
-		if (generator.equals("Ninja")) { //$NON-NLS-1$
-			command = "ninja"; //$NON-NLS-1$
-		} else if (generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
-			command = "mingw32-make"; //$NON-NLS-1$
-		} else {
-			command = "make"; //$NON-NLS-1$
-		}
-		return command;
-	}
-
 	@Override
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 		try {
-			String generator = getProperty(CMAKE_GENERATOR);
-
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
-
+			
 			ConsoleOutputStream outStream = console.getOutputStream();
-
 			Path buildDir = getBuildDirectory();
-
 			if (!Files.exists(buildDir.resolve("CMakeFiles"))) { //$NON-NLS-1$
 				outStream.write(Messages.CMakeBuildConfiguration_NotFound);
 				return;
 			}
-
+			
 			List<String> command = new ArrayList<>();
-			String cleanCommand = getProperty(CLEAN_COMMAND);
+			
 			if (cleanCommand == null) {
 				cleanCommand = getBuildCommand(generator).concat(" clean");
-					command.add("clean"); //$NON-NLS-1$
-
 		 	} else {
 		 		command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
+
+
 		 	}
 			
 			IEnvironmentVariable[] env = new IEnvironmentVariable[0];
 
-			outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 			
 			org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(getBuildDirectory().toString());
 			Process p = startBuildProcess(command, env, workingDir, console, monitor);
