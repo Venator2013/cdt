@@ -147,18 +147,17 @@ public class CMakeBuildTab extends CommonBuildTab {
 	}
 
 	private void updateGeneratorButtons(String generator) {
+		
+		ninjaGenButton.setSelection(false);
+		unixGenButton.setSelection(false);
+		minGWGenButton.setSelection(false);
+		
 		if (generator == null || generator.equals("Ninja")) { //$NON-NLS-1$
 			ninjaGenButton.setSelection(true);
-			unixGenButton.setSelection(false);
-			minGWGenButton.setSelection(false);
 		} else if (generator.equals("MinGW Makefiles")) { //$NON-NLS-1$
-			ninjaGenButton.setSelection(false);
-			unixGenButton.setSelection(false);
 			minGWGenButton.setSelection(true);
 		} else {
-			ninjaGenButton.setSelection(false);
 			unixGenButton.setSelection(true);
-			minGWGenButton.setSelection(false);
 		}
 	}
 	
