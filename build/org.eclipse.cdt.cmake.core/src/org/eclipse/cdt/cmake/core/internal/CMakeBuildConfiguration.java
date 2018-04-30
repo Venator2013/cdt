@@ -129,7 +129,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 			if (toolChainFile == null && !isLocal()) {
 				ICMakeToolChainManager manager = Activator.getService(ICMakeToolChainManager.class);
 				toolChainFile = manager.getToolChainFileFor(getToolChain());
-				
+
 				if (toolChainFile == null) {
 					// error
 					console.getErrorStream().write(Messages.CMakeBuildConfiguration_NoToolchainFile);
@@ -147,18 +147,10 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 			}
 
 			if (runCMake) { // $NON-NLS-1$
-				
+
 				List<String> command = new ArrayList<>();
 
 				command.add("cmake"); //$NON-NLS-1$
-				// TODO location of CMake out of preferences if not found here
-				Path cmakePath = findCommand("cmake"); //$NON-NLS-1$
-				if (cmakePath != null) {
-					command.add(cmakePath.toString());
-				} else {
-					command.add("cmake"); //$NON-NLS-1$
-				}
-
 				command.add("-G"); //$NON-NLS-1$
 				command.add(generator);
 
@@ -187,13 +179,14 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 
-				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(getBuildDirectory().toString());
+				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(
+						getBuildDirectory().toString());
 				Process p = startBuildProcess(command, new IEnvironmentVariable[0], workingDir, console, monitor);
 				if (p == null) {
 					console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
 					return null;
 				}
-				
+
 				watchProcess(p, console);
 			}
 
@@ -202,7 +195,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				epm.setOutputStream(console.getOutputStream());
 
 				List<String> command = new ArrayList<>();
-				
+
 				String envStr = getProperty(CMAKE_ENV);
 				List<IEnvironmentVariable> envVars = new ArrayList<>();
 				if (envStr != null) {
@@ -216,7 +209,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 						}
 					}
 				}
-				
+
 				String buildCommand = getProperty(BUILD_COMMAND);
 				if (buildCommand == null) {
 					command.add("cmake"); //$NON-NLS-1$
@@ -231,9 +224,11 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				}
 
 				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
-				
-				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(getBuildDirectory().toString());
-				Process p = startBuildProcess(command, envVars.toArray(new IEnvironmentVariable[0]), workingDir, console, monitor);
+
+				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(
+						getBuildDirectory().toString());
+				Process p = startBuildProcess(command, envVars.toArray(new IEnvironmentVariable[0]), workingDir,
+						console, monitor);
 				if (p == null) {
 					console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
 					return null;
@@ -246,7 +241,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 				// Load compile_commands.json file
 				processCompileCommandsFile(monitor);
 
-				outStream.write(String.format(Messages.CMakeBuildConfiguration_BuildingComplete, epm.getErrorCount(), 
+				outStream.write(String.format(Messages.CMakeBuildConfiguration_BuildingComplete, epm.getErrorCount(),
 						epm.getWarningCount(), buildDir.toString()));
 			}
 
@@ -261,40 +256,49 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 		try {
+					
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
-			
+
 			ConsoleOutputStream outStream = console.getOutputStream();
 			Path buildDir = getBuildDirectory();
 			if (!Files.exists(buildDir.resolve("CMakeFiles"))) { //$NON-NLS-1$
 				outStream.write(Messages.CMakeBuildConfiguration_NotFound);
 				return;
 			}
-			
-			List<String> command = new ArrayList<>();
-			
-			if (cleanCommand == null) {
-				cleanCommand = getBuildCommand(generator).concat(" clean");
-		 	} else {
-		 		command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
 
-
-		 	}
-			
-			IEnvironmentVariable[] env = new IEnvironmentVariable[0];
+			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
+					getToolChain().getErrorParserIds())) {
+				
+				epm.setOutputStream(console.getOutputStream());
+				
+				List<String> command = new ArrayList<>();
+				String cleanCommand = getProperty(CLEAN_COMMAND);
+							
+				if (cleanCommand == null) {	
+						command.add("cmake"); //$NON-NLS-1$
+						command.add("--build"); //$NON-NLS-1$
+						command.add("."); //$NON-NLS-1$
+						command.add("--target"); //$NON-NLS-1$
+						command.add("--clean"); //$NON-NLS-1$
+					
+			 	} else {
+			 		command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
+			 	}
 
 				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
-			
-			org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(getBuildDirectory().toString());
-			Process p = startBuildProcess(command, env, workingDir, console, monitor);
-			if (p == null) {
-				console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
-				return;
+				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(
+						getBuildDirectory().toString());
+
+				Process p = startBuildProcess(command, new IEnvironmentVariable[0], workingDir, console, monitor);
+				if (p == null) {
+					console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
+					return;
+				}
+
+				watchProcess(p, console);
+
+				outStream.write(Messages.CMakeBuildConfiguration_BuildComplete);
 			}
-			
-			watchProcess(p, console);
-			
-			outStream.write(Messages.CMakeBuildConfiguration_BuildComplete); 
-	
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException e) {
 			throw new CoreException(Activator
