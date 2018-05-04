@@ -215,6 +215,12 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 					command.add("cmake"); //$NON-NLS-1$
 					command.add("--build"); //$NON-NLS-1$
 					command.add("."); //$NON-NLS-1$
+
+					if (getLaunchMode() == "package") { //$NON-NLS-1$
+						command.add("--target");//$NON-NLS-1$
+						command.add("package");//$NON-NLS-1$
+					}
+
 					if ("Ninja".equals(generator)) {
 						command.add("--"); //$NON-NLS-1$
 						command.add("-v"); //$NON-NLS-1$
@@ -256,7 +262,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 		try {
-					
+
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
 
 			ConsoleOutputStream outStream = console.getOutputStream();
@@ -268,22 +274,22 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 
 			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
 					getToolChain().getErrorParserIds())) {
-				
+
 				epm.setOutputStream(console.getOutputStream());
-				
+
 				List<String> command = new ArrayList<>();
 				String cleanCommand = getProperty(CLEAN_COMMAND);
-							
-				if (cleanCommand == null) {	
-						command.add("cmake"); //$NON-NLS-1$
-						command.add("--build"); //$NON-NLS-1$
-						command.add("."); //$NON-NLS-1$
-						command.add("--target"); //$NON-NLS-1$
-						command.add("--clean"); //$NON-NLS-1$
-					
-			 	} else {
-			 		command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
-			 	}
+
+				if (cleanCommand == null) {
+					command.add("cmake"); //$NON-NLS-1$
+					command.add("--build"); //$NON-NLS-1$
+					command.add("."); //$NON-NLS-1$
+					command.add("--target"); //$NON-NLS-1$
+					command.add("--clean"); //$NON-NLS-1$
+
+				} else {
+					command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
+				}
 
 				outStream.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 				org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(
