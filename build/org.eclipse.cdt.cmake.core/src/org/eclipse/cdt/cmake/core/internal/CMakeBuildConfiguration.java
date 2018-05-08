@@ -285,7 +285,7 @@ public class CMakeBuildConfiguration extends CBuildConfiguration {
 					command.add("--build"); //$NON-NLS-1$
 					command.add("."); //$NON-NLS-1$
 					command.add("--target"); //$NON-NLS-1$
-					command.add("--clean"); //$NON-NLS-1$
+					command.add("clean"); //$NON-NLS-1$
 
 				} else {
 					command.addAll(Arrays.asList(cleanCommand.split(" "))); //$NON-NLS-1$
